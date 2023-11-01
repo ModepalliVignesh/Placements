@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Embedded PDF Viewer</title>
+<!-- Bootstrap CSS -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"/>
+<style>
+        html, body {
+            display: flex;
+ 
+            margin: 0; 
+            padding: 0; 
+            height: 100vh; 
+            width: 100vw;
+            overflow: hidden; /* Prevent scrolling */
+        }
+        body {
+            display: flex;
+
+            background-color: #f3f3f3;
+            font-family: Arial, sans-serif;
+        }
+        .index-sidebar button {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+/* Style for "Questions" and "Videos" buttons */
+.index-sidebar button.questions {
+    display: inline;
+    width: auto;
+}
+
+.index-sidebar button.videos {
+    display: inline;
+    width: auto;
+}
+
+        .index-sidebar {
+            border: 1px solid #6C757D;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            background-color: #b1e5c6;
+            color: white;
+            padding: 15px;
+            height: 100vh;
+            position: fixed;
+            overflow: auto;
+            width: 250px; /* Adjusted width */
+        }
+        .index-sidebar h3,
+        .index-sidebar .card {
+            margin-bottom: 15px;
+        }
+
+        .index-sidebar .card-body {
+            display: flex;
+
+            padding: 10px;
+        }
+
+        .index-sidebar ul {
+            margin-top: 20px;
+        }
+        .index-sidebar .card {
+            margin-bottom: 15px;
+        }
+
+        .index-sidebar .card-body {
+            display: flex;
+
+            padding: 10px;
+        }
+
+        .index-sidebar ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .index-sidebar ul li {
+            margin-bottom: 10px;
+        }
+        .pdf-viewer {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            margin-left: 360px; /* Adjusted margin */
+        }
+        .pdf-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+            margin-top: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #6C757D;
+            height: 96vh;
+            overflow-y: auto;
+        }
+    .btn-primary{
+        text-align: center;
+    }
+    .btn-primary {
+        border-radius: 20px;
+        padding: 10px 20px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        background-color: #17A2B8;
+        border-color: #007bff;
+    }
+    .btn-primary:hover {
+        transform: scale(1.05);
+        background-color: #343A40;
+        border-color: #2b8aef;
+    }
+    .sub-btn{
+        text-align: center;
+        background-color: #28A745;
+        border-color: #007bff;
+    }
+    .sub-btn:hover {
+        background-color: #343A40;
+        border-color: #004085;
+    }
+    .embed-responsive {
+        margin-top: 20px;
+    }
+    .canvas-container {
+        height: 100%;
+        overflow-y: auto;
+        background: #808080;
+        text-align: center;
+        width: 120%;
+        padding: 0;
+    }
+    canvas {
+        width: 120%;
+        border: none;
+        margin: 0;
+        display: block; /* removes bottom whitespace */
+    }.video-item {
+            display: block;
+            margin: 5px 0;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            text-align: left;
+            width: 90%;
+            border-radius: 5px;
+            cursor: pointer;
+            text-transform: capitalize;
+            margin-bottom: 10px;
+        }
+
+        .video-options {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+        /* Additional CSS for button styling */
+button {
+    background-color: #27f1ff;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+button:hover {
+    background-color: #4e87f3;
+    transform: scale(1.05);
+}
+    
+    .btn {
+        transition: all 0.3s ease;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.1);
+    }
+    </style>
+<style>
+.btn:hover {
+    background-color: #343A40;
+    transform: translateY(-2px);
+    box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.1);
+}
+</style></head>
+<body>
+<div class="container-fluid">
+<div class="row">
+<div class="col-md-3 index-sidebar" style="background-color: #80ace4; color: #FFFFFF;">
+<h3 align="center">Index</h3>
+<p>----------------------------------------</p>
+<ul></ul>
+<div class="pdf-container" style="display: none;"></div>
+<div class="c-videos video-options" style="display: none;"></div>
+</div>
+<div class="col-md-9 pdf-viewer" style="padding: 0; margin-top: 0;">
+<div class="row">
+<div class="embed-responsive embed-responsive-16by9 pdf-content">
+<iframe class="embed-responsive-item" id="pdf-iframe" src="" style="display:none;" type="application/pdf"></iframe>
+<video class="embed-responsive-item" controls="" id="video-player" style="display:none;"></video>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+    let questionsButton;  // Declare questionsButton outside the functions
+    let videosButton;    // Declare videosButton outside the functions
+
+    function showOptions(subject) {
+        var x = document.getElementById(subject + "-options");
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        } else {
+            x.style.display = 'none';
+        }
+    }
+
+    function loadPdf(filename) {
+        var videoPlayer = document.getElementById('video-player');
+        videoPlayer.style.display = 'none';
+
+        var pdfIframe = document.getElementById('pdf-iframe');
+        pdfIframe.src = `/pdf/${filename}#toolbar=0&navpanes=0`;
+        pdfIframe.style.display = 'block';
+    }
+
+    async function loadVideoList(subject) {
+        if (subject === 'c') {
+            try {
+                let response = await fetch('/videos');
+                let videos = await response.json();
+
+                let videoListContainer = document.querySelector('.' + subject + '-videos');
+                videoListContainer.innerHTML = '';
+                videos.forEach(video => {
+                    let videoItem = document.createElement('button');
+                    videoItem.classList.add('video-item');
+                    videoItem.textContent = video;
+                    videoItem.onclick = () => playVideo(video, subject);
+                    videoListContainer.appendChild(videoItem);
+                });
+                videoListContainer.style.display = 'block';
+            } catch (error) {
+                console.error('Failed to fetch video list:', error);
+            }
+        }
+    }
+
+    async function playVideo(videoName, subject) {
+        try {
+            let response = await fetch(`/get_video_url/${subject}`);
+            let videoBaseUrl = await response.json();
+
+            let sasLink = videoBaseUrl.split("?")[0];
+            let videoUrl = `${sasLink}/${videoName}?${videoBaseUrl.split("?")[1]}`;
+
+            var videoPlayer = document.getElementById('video-player');
+            videoPlayer.src = videoUrl;
+            videoPlayer.style.display = 'block';
+
+            var pdfIframe = document.getElementById('pdf-iframe');
+            pdfIframe.style.display = 'none';
+
+            var videoList = document.getElementById(subject + '-videos');
+            videoList.style.display = 'none';
+        } catch (error) {
+            console.error('Failed to play video:', error);
+        }
+    }
+
+    async function loadInitialButtons() {
+        try {
+            let response = await fetch('/available_keys');
+            let subjects = await response.json();
+            let buttonContainer = document.querySelector('.index-sidebar ul');
+            subjects.forEach(subject => {
+                let listItem = document.createElement('li');
+                let button = document.createElement('button');
+                button.textContent = subject.toUpperCase();
+                button.onclick = () => displayOptions(subject);
+                listItem.appendChild(button);
+                buttonContainer.appendChild(listItem);
+            });
+        } catch (error) {
+            console.error('Failed to load initial buttons:', error);
+        }
+    }
+
+    function loadPDFList(subject) {
+        // The PDF name is directly derived from the subject, e.g. 'c.pdf' for 'c'
+        let pdfName = subject + ".pdf";
+        loadPdf(pdfName);
+    }
+
+    function displayOptions(subject) {
+    let buttonContainer = document.querySelector('.index-sidebar ul');
+    
+    // Generate unique IDs based on the subject
+    let questionsButtonId = subject + "-questions-btn";
+    let videosButtonId = subject + "-videos-btn";
+    let optionsContainerId = subject + "-options-container";
+    
+    // If the options already exist
+    let existingOptionsContainer = document.getElementById(optionsContainerId);
+    if (existingOptionsContainer) {
+        if (existingOptionsContainer.style.display === 'none') {
+            existingOptionsContainer.style.display = 'flex';
+        } else {
+            existingOptionsContainer.style.display = 'none';
+        }
+        return; // Exit the function early
+    }
+    
+    let optionsContainer = document.createElement('div');
+    optionsContainer.id = optionsContainerId;
+    optionsContainer.style.display = 'flex';
+    optionsContainer.style.justifyContent = 'space-between';
+    optionsContainer.style.width = '100%'; // Make it full width
+    
+    // Add the "Questions" button
+    let questionsButton = document.createElement('button');
+    questionsButton.textContent = 'Questions';
+    questionsButton.id = questionsButtonId;
+    questionsButton.className = 'questions';
+    questionsButton.onclick = () => {
+        loadPDFList(subject);
+        hideVideoList(subject);
+    };
+    optionsContainer.appendChild(questionsButton);
+    
+    // Add the "Videos" button
+    let videosButton = document.createElement('button');
+    videosButton.textContent = 'Videos';
+    videosButton.id = videosButtonId;
+    videosButton.className = 'videos';
+    videosButton.onclick = () => {
+        loadVideoList(subject);
+        showVideoList(subject);
+    };
+    optionsContainer.appendChild(videosButton);
+    
+    // Find the subject button and insert the options container after it
+    let subjectButton = Array.from(buttonContainer.children).find(li => li.textContent.trim().toUpperCase() === subject.toUpperCase());
+    if (subjectButton) {
+        buttonContainer.insertBefore(optionsContainer, subjectButton.nextSibling);
+    } else {
+        buttonContainer.appendChild(optionsContainer);
+    }
+}
+
+
+
+    function hideVideoList(subject) {
+        var videoList = document.querySelector('.' + subject + '-videos');
+        videoList.style.display = 'none';
+    }
+
+    function showVideoList(subject) {
+        var videoList = document.querySelector('.' + subject + '-videos');
+        videoList.style.display = 'block';
+    }
+
+    // Load the initial buttons when the page loads
+    window.onload = function () {
+        loadInitialButtons();
+    };
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var mainButtons = document.querySelectorAll('.index-sidebar button:not(.sub-btn)');
+    
+    mainButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            // Hide all sub button containers
+             containers = document.querySelectorAll('.sub-btn-container');
+            containers.forEach(function(container) {
+                container.style.display = 'none';
+            });
+            
+            // Show the sub button container specifically for the clicked main button
+           nextElement = this.nextElementSibling;
+            if (nextElement && nextElement.classList.contains('sub-btn-container')) {
+                nextElement.style.display = 'block';
+            }
+        });
+    });
+});
+</script>
+</body>
+</html>

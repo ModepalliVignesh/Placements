@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Generator</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"/>
+        <style>
+        html, body {
+            display: flex;
+            margin: 0; 
+            padding: 0; 
+            height: 100vh; 
+            width: 100vw;
+            overflow: hidden; /* Prevent scrolling */
+        }
+        body {
+            display: flex;
+
+            background-color: #f3f3f3;
+            font-family: Arial, sans-serif;
+        }
+        .index-sidebar button {
+    width: 100%;
+    margin-bottom: 10px;
+}
+        .index-sidebar {
+            border: 1px solid #6C757D;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            background-color: #b1e5c6;
+            color: white;
+            padding: 15px;
+            height: 100vh;
+            position: fixed;
+            overflow: auto;
+            width: 250px; /* Adjusted width */
+        }
+        .index-sidebar h3,
+        .index-sidebar .card {
+            margin-bottom: 15px;
+        }
+
+        .index-sidebar .card-body {
+            display: flex;
+
+            padding: 10px;
+        }
+
+        .index-sidebar ul {
+            margin-top: 20px;
+        }
+        .index-sidebar .card {
+            margin-bottom: 15px;
+        }
+
+        .index-sidebar .card-body {
+            display: flex;
+
+            padding: 10px;
+        }
+
+        .index-sidebar ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .index-sidebar ul li {
+            margin-bottom: 10px;
+        }
+
+    .btn-primary{
+        text-align: center;
+    }
+    .btn-primary {
+        border-radius: 20px;
+        padding: 10px 20px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        background-color: #17A2B8;
+        border-color: #007bff;
+    }
+    .btn-primary:hover {
+        transform: scale(1.05);
+        background-color: #343A40;
+        border-color: #2b8aef;
+    }
+
+button {
+    background-color: #27f1ff;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+button:hover {
+    background-color: #4e87f3;
+    transform: scale(1.05);
+}
+    
+    .btn {
+        transition: all 0.3s ease;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .card {
+            margin: 10px 0; /* Space between cards */
+            padding: 15px;  /* Padding inside cards */
+            background-color: #ffffff; /* Background color for cards */
+            border: 1px solid #e0e0e0; /* Border for cards */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+        }
+        .pdf-viewer {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0 30px 30px 30px;  /* Adjusted padding */
+    margin-left: 370px; /* Adjusted margin */
+    padding-top: 20px;
+    height: 100vh;
+}
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+        .pdf-content {
+    width: 100%;
+    padding: 0px 40px 40px 40px;
+    padding-top: 0;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid #6C757D;
+    height: 190vh;  /* You can adjust this value based on your preference */
+    overflow-y: auto;  /* This enables vertical scrolling */
+    margin-top: -35rem;
+}
+.container-fluid, .row {
+    margin: 0;
+    padding: 0;
+}
+
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3 index-sidebar" style="background-color: #80ace4; color: #FFFFFF;">
+                <h3 align="center">Companies</h3>
+                <p>----------------------------------------</p>
+                <button id="generateBtn" class="btn btn-primary">TCS QUESTIONS</button>
+            </div>
+            <div class="col-md-9 pdf-viewer" style="padding: 0; margin-top: 0; top:0;">
+                <div class="embed-responsive embed-responsive-16by9 pdf-content" id="questionsArea">
+                    <!-- Questions will appear here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $("#generateBtn").click(function () {
+            $.post("/generate", {}, function (data) {
+                let questions = data.questions;
+                let htmlContent = "";
+                questions.forEach((question, index) => {
+    htmlContent += `
+    <div class="card mt-3" style="margin-top:">
+        <div class="card-body" style="margin-top:">
+            <strong>Question ${index + 1}:</strong> ${question}
+        </div>
+    </div>`;
+});
+
+                $("#questionsArea").html(htmlContent);
+            });
+        });
+    </script>
+</body>
+</html>
